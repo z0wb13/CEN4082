@@ -11,15 +11,16 @@ namespace Master_Control_Program
         static void Main(string[] args)
         {
             Elevator elwood = new Elevator();
-            Console.Write("Which Floor? : ");
+            Console.WriteLine(elwood);
+            Console.Write("\nWhich Floor? : ");
             string x = Console.ReadLine();
             int floor;
             bool isValid = int.TryParse(x, out floor);
             while (floor != -1)
             {
                 elwood.gotoFloor(floor);
-                Console.WriteLine(elwood);
-                Console.WriteLine("press enter to goto next floor...");
+                Console.WriteLine(elwood.getElevatorState());
+                Console.WriteLine("\npress enter to goto next floor...");
                 Console.ReadLine();
                 elwood.arrivedAtFloor();
                 Console.WriteLine(elwood);
@@ -126,6 +127,18 @@ namespace Master_Control_Program
                 this.LastFloor = this.CurrentFloor;
                 this.CurrentFloor = (int)this.NextFloor;
                 this.NextFloor = null;
+            }
+
+            public string getElevatorState()
+            {
+                string s = "";
+                if ((CurrentFloor - (int)NextFloor) < 0)
+                { s = "Going_UP"; }
+                if ((CurrentFloor - (int)NextFloor) > 0)
+                { s = "Going_DOWN"; }
+                if ((CurrentFloor - (int)NextFloor) == 0)
+                { s = "you're already there..."; }
+                return s;
             }
         }
 
