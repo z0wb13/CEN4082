@@ -10,16 +10,23 @@ namespace Master_Control_Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("hello world");
             Elevator elwood = new Elevator();
-            Console.WriteLine(elwood);
-            Console.Write("Which FLoor:");
+            Console.Write("Which Floor? : ");
             string x = Console.ReadLine();
             int floor;
             bool isValid = int.TryParse(x, out floor);
-            elwood.gotoFloor(floor);
-            Console.WriteLine(elwood);
-            x = Console.ReadLine();
+            while (floor != -1)
+            {
+                elwood.gotoFloor(floor);
+                Console.WriteLine(elwood);
+                Console.WriteLine("press enter to goto next floor...");
+                Console.ReadLine();
+                elwood.arrivedAtFloor();
+                Console.WriteLine(elwood);
+                Console.Write("\nWhich Floor? (enter -1 to quit): ");
+                x = Console.ReadLine();
+                isValid = int.TryParse(x, out floor);
+            }
         }
 
         public class Elevator
@@ -37,19 +44,36 @@ namespace Master_Control_Program
                 InService = true;
             }
 
-            //constructor
-            public Elevator(string elevatorName, int currentFloor,  string doorState, bool doorClear)
+            //constructor public
+            public Elevator(string elevatorName, int currentFloor)
             {
                 this.Name = elevatorName;
                 this.CurrentFloor = currentFloor;
                 this.NextFloor = null;
                 this.LastFloor = null;
                 this.DoorState = 0;
+                this.DoorClear = false;
+                this.InService = true;
+            }
 
+            //contructor
+            private Elevator(string elevatorName, int currentFloor, Nullable<int> nextFloor,
+                Nullable<int> lastFloor, int doorState, bool doorClear, bool inService)
+            {
+                this.Name = elevatorName;
+                this.CurrentFloor = currentFloor;
+                this.NextFloor = nextFloor;
+                this.LastFloor = lastFloor;
+                this.DoorState = doorState;
+                this.DoorClear = doorClear;
+                this.InService = inService;
+            }
+
+            // setting the door state
+            private void setDoorState(string doorState)
+            {
                 switch (doorState)
                 {
-                    case "":
-                        break;
                     case "closed":
                         this.DoorState = 0;
                         break;
@@ -62,8 +86,9 @@ namespace Master_Control_Program
                     case "opening":
                         DoorState = 1;
                         break;
+                    default:
+                        break;
                 }
-                this.DoorClear = doorClear;
             }
 
             //toString()
@@ -96,22 +121,16 @@ namespace Master_Control_Program
                 this.NextFloor = f;
             }
 
-
-
+            public void arrivedAtFloor()
+            {
+                this.LastFloor = this.CurrentFloor;
+                this.CurrentFloor = (int)this.NextFloor;
+                this.NextFloor = null;
+            }
         }
+
         class Buttons { }
         class Display { }
         class Scheduler { }
-
-
-
-
-
-
-
     }
-
-    
-
-
 }
