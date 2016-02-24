@@ -11,7 +11,9 @@ namespace Master_Control_Program
         static void Main(string[] args)
         {
             Elevator elwood = new Elevator();
+            elwood.openElevator();
             Console.WriteLine(elwood);
+            
             Console.Write("\nWhich Floor? : ");
             string x = Console.ReadLine();
             int floor;
@@ -20,11 +22,13 @@ namespace Master_Control_Program
             {
                 elwood.gotoFloor(floor);
                 Console.WriteLine(elwood.getElevatorState());
-                Console.WriteLine("\npress enter to goto next floor...");
+                //Console.WriteLine("\npress enter to goto next floor...");
                 Console.ReadLine();
                 elwood.arrivedAtFloor();
+                elwood.openElevator();
                 Console.WriteLine(elwood);
                 Console.Write("\nWhich Floor? (enter -1 to quit): ");
+                elwood.closeElevator();
                 x = Console.ReadLine();
                 isValid = int.TryParse(x, out floor);
             }
@@ -140,6 +144,33 @@ namespace Master_Control_Program
                 { s = "you're already there..."; }
                 return s;
             }
+
+            public async void openElevator()
+            {
+                if (DoorState == 0 || DoorClear == true)
+                {
+                    this.DoorState = 1;
+                    Console.WriteLine("the door is opened");
+                    await Task.Delay(3000);
+                    this.DoorState = 2;
+                    Console.WriteLine("the door is opened");
+                }
+            }
+
+            public async void closeElevator()
+            {
+                if (DoorState == 2 && DoorClear == true)
+                {
+                    this.DoorState = 3;
+                    Console.WriteLine("the door is closing\n");
+                    await Task.Delay(3000);
+                    this.DoorState = 0;
+                    Console.WriteLine("the door is closed");
+                }
+            }
+
+
+
         }
 
         class Buttons { }
