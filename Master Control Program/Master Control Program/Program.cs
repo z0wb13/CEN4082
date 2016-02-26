@@ -41,14 +41,15 @@ namespace Master_Control_Program
             private Nullable<int>  NextFloor, LastFloor;
             private int DoorState;
             private bool DoorClear, InService;
-
+            private List<Passenger> Passengers = new List<Passenger>(); 
+            
             //default contructor
             public Elevator ()
             {
                 Name = "Elwood the Elevator";
                 InService = true;
             }
-
+             
             //constructor public
             public Elevator(string elevatorName, int currentFloor)
             {
@@ -74,6 +75,84 @@ namespace Master_Control_Program
                 this.InService = inService;
             }
 
+            public string getName()
+            {
+                return this.Name;
+            }
+
+            public void setName(string name)
+            {
+                this.Name = name;
+            }
+
+            public int getCurrentFloor()
+            {
+                return this.CurrentFloor;
+            }
+
+            public void setCurrentFloor(int currentFloor)
+            {
+                this.CurrentFloor = currentFloor;
+            }
+
+            public int getNextFloor()
+            {
+                return (int)this.NextFloor;
+            }
+
+            public void setNextFloor(int nextFloor)
+            {
+                this.NextFloor = nextFloor;
+            }
+
+            public int getLastFloor()
+            {
+                return (int)this.LastFloor;
+            }
+
+            public void setLastFloor(int lastFloor)
+            {
+                this.LastFloor = lastFloor;
+            }
+
+            public bool getDoorClear()
+            {
+                return this.DoorClear;
+            }
+
+            public void setDoorClear(bool doorClear)
+            {
+                this.DoorClear = doorClear;
+            }
+
+            public bool getInService()
+            {
+                return this.InService;
+            }
+
+            public int getDoorState()
+            {
+                return this.DoorState;
+            }
+
+            public void setDoorState(int doorState)
+            {
+                if (doorState >= 0 && doorState <= 4)
+                {
+                    this.DoorState = doorState;
+                }
+            }
+
+            //toString()
+            public override string ToString()
+            {
+                string s = "";
+                s = "Name: " + Name + "\nInService: " + InService + "\nCurrentFloor: " + CurrentFloor
+                     + "\nNextFloor: " + NextFloor + "\nLastFloor: " + LastFloor
+                     + "\nDoorState: " + this.showDoorState() + "\nDoorClear: " + DoorClear;
+                return s;
+            }
+
             // setting the door state
             private void setDoorState(string doorState)
             {
@@ -95,17 +174,6 @@ namespace Master_Control_Program
                         break;
                 }
             }
-
-            //toString()
-            public override string ToString()
-            {
-                string s = "";
-                s = "Name: " + Name + "\nInService: " + InService + "\nCurrentFloor: " + CurrentFloor
-                     + "\nNextFloor: " + NextFloor + "\nLastFloor: " + LastFloor
-                     + "\nDoorState: " + this.showDoorState() + "\nDoorClear: " + DoorClear;
-                return s;
-            }
-
             //display door state
             public string showDoorState()
             {
@@ -121,9 +189,9 @@ namespace Master_Control_Program
                 return s;
             }
 
-            public void gotoFloor(int f)
+            public void gotoFloor(int nextFloor)
             {
-                this.NextFloor = f;
+                this.NextFloor = nextFloor;
             }
 
             public void arrivedAtFloor()
@@ -135,13 +203,16 @@ namespace Master_Control_Program
 
             public string getElevatorState()
             {
-                string s = "";
-                if ((CurrentFloor - (int)NextFloor) < 0)
-                { s = "Going_UP"; }
-                if ((CurrentFloor - (int)NextFloor) > 0)
-                { s = "Going_DOWN"; }
-                if ((CurrentFloor - (int)NextFloor) == 0)
-                { s = "you're already there..."; }
+                string s = "Arrived_At_Floor";
+                if (NextFloor != null)
+                {
+                    if ((CurrentFloor - (int)NextFloor) < 0)
+                    { s = "Going_UP"; }
+                    if ((CurrentFloor - (int)NextFloor) > 0)
+                    { s = "Going_DOWN"; }
+                    if ((CurrentFloor - (int)NextFloor) == 0)
+                    { s = "you're already there..."; }
+                }
                 return s;
             }
 
@@ -150,7 +221,7 @@ namespace Master_Control_Program
                 if (DoorState == 0 || DoorClear == true)
                 {
                     this.DoorState = 1;
-                    Console.WriteLine("the door is opened");
+                    Console.WriteLine("the door is opening\n");
                     await Task.Delay(3000);
                     this.DoorState = 2;
                     Console.WriteLine("the door is opened");
@@ -168,13 +239,53 @@ namespace Master_Control_Program
                     Console.WriteLine("the door is closed");
                 }
             }
+        }
+
+        class Passenger
+        {
+            private string Name;
+            private int CurrentFloor, NextFloor;
+            private int TimePickUp, TimeDropOff, TimeWait;
+
+            public Passenger(string name, int currentFloor, int nextFloor)
+            {
+                this.Name = name;
+                this.CurrentFloor = currentFloor;
+                this.NextFloor = nextFloor;
+            }
+
+            //methods get/set
+            public string getName()
+            {
+                return this.Name;
+            }
+            public int getCurrentFloor()
+            {
+                return this.CurrentFloor;
+            }
+            public int getNextFloor()
+            {
+                return this.NextFloor;
+            }
+
+
+        }
+
+        class Scheduler 
+        {
+            List<Elevator> Elevator = new List<Elevator>();
+            List<Passenger> Passengers = new List<Passenger>();
+            List<Passenger> Requests = new List<Passenger>();
+
+
 
 
 
         }
 
+
         class Buttons { }
         class Display { }
-        class Scheduler { }
+        
     }
 }
