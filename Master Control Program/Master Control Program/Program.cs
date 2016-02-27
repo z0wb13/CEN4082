@@ -11,10 +11,11 @@ namespace Master_Control_Program
         static void Main(string[] args)
         {
             Elevator elwood = new Elevator();
-            elwood.openElevator();
+            //elwood.openElevator();
             Console.WriteLine(elwood);
-            
+            elwood.setDoorState("opened");
             Console.Write("\nWhich Floor? : ");
+            elwood.setDoorState("closed");
             string x = Console.ReadLine();
             int floor;
             bool isValid = int.TryParse(x, out floor);
@@ -23,13 +24,12 @@ namespace Master_Control_Program
                 elwood.gotoFloor(floor);
                 Console.WriteLine(elwood.getElevatorState());
                 //Console.WriteLine("\npress enter to goto next floor...");
-                Console.ReadLine();
-                elwood.arrivedAtFloor();
-                elwood.openElevator();
+                Console.ReadLine(); 
                 Console.WriteLine(elwood);
                 Console.Write("\nWhich Floor? (enter -1 to quit): ");
-                elwood.closeElevator();
                 x = Console.ReadLine();
+                elwood.setDoorClear(true);
+                elwood.closeElevator(); 
                 isValid = int.TryParse(x, out floor);
             }
         }
@@ -48,6 +48,10 @@ namespace Master_Control_Program
             {
                 Name = "Elwood the Elevator";
                 InService = true;
+                this.NextFloor = null;
+                this.LastFloor = null;
+                this.DoorState = 0;
+                this.DoorClear = false;
             }
              
             //constructor public
@@ -153,8 +157,8 @@ namespace Master_Control_Program
                 return s;
             }
 
-            // setting the door state
-            private void setDoorState(string doorState)
+            // setting the door state 
+            public void setDoorState(string doorState)
             {
                 switch (doorState)
                 {
@@ -174,7 +178,7 @@ namespace Master_Control_Program
                         break;
                 }
             }
-            //display door state
+            //display door state 
             public string showDoorState()
             {
                 string s = "";
@@ -189,18 +193,39 @@ namespace Master_Control_Program
                 return s;
             }
 
-            public void gotoFloor(int nextFloor)
+            public async void gotoFloor(int nextFloor)
             {
-                this.NextFloor = nextFloor;
+                if (getDoorState() == 0)
+                {
+                    this.NextFloor = nextFloor;
+                    await Task.Delay(ETA());
+                    arrivedAtFloor();
+                    openElevator();
+                }
+                
             }
 
             public void arrivedAtFloor()
             {
+                Console.WriteLine("you have arrived");
                 this.LastFloor = this.CurrentFloor;
                 this.CurrentFloor = (int)this.NextFloor;
                 this.NextFloor = null;
             }
 
+            public int ETA()
+            {
+                int t = 0;
+                t = (int)NextFloor - CurrentFloor;
+                t *= 7000;
+                if (t < 0)
+                {
+                    t *= -1;
+                }
+                return t;
+            }
+
+            //this tells you if the elevator is headed up or down. 
             public string getElevatorState()
             {
                 string s = "Arrived_At_Floor";
@@ -216,15 +241,16 @@ namespace Master_Control_Program
                 return s;
             }
 
-            public async void openElevator()
+
+            private async void openElevator()
             {
                 if (DoorState == 0 || DoorClear == true)
                 {
                     this.DoorState = 1;
-                    Console.WriteLine("the door is opening\n");
+                    Console.WriteLine("the door is opening. ");
                     await Task.Delay(3000);
                     this.DoorState = 2;
-                    Console.WriteLine("the door is opened");
+                    Console.WriteLine("the door is opened. ");
                 }
             }
 
@@ -233,10 +259,10 @@ namespace Master_Control_Program
                 if (DoorState == 2 && DoorClear == true)
                 {
                     this.DoorState = 3;
-                    Console.WriteLine("the door is closing\n");
+                    Console.WriteLine("the door is closing. ");
                     await Task.Delay(3000);
                     this.DoorState = 0;
-                    Console.WriteLine("the door is closed");
+                    Console.WriteLine("the door is closed. ");
                 }
             }
         }
